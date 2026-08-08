@@ -286,16 +286,24 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,
 .hub-utilities details[open] summary::before{content:"▼"}
 .hub-utilities-content{padding-top:14px}
 .hub-bottom-actions{
-  display:flex;justify-content:flex-end;margin-top:16px;padding-top:12px;
+  display:flex;justify-content:flex-end;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-top:16px;padding-top:12px;
   border-top:2px dashed var(--border)
 }
 .hub-bottom-actions button{min-width:min(100%,240px)}
+.hub-audio-dock{width:min(100%,240px)}
+.hub-audio-dock .audio-controls{position:static!important;inset:auto!important;max-width:none!important;width:100%!important}
+.hub-audio-dock .audio-controls>summary{width:100%;height:44px;margin:0;box-shadow:none}
+.hub-audio-dock .audio-controls>summary::after{content:"  Audio";font-size:.75rem;margin-left:7px}
+.hub-audio-dock .audio-controls-panel{display:grid!important;grid-template-columns:1fr!important;gap:7px!important;box-shadow:none;margin-top:7px}
+.hub-audio-dock .audio-toggle,.hub-audio-dock .music-volume-control{width:100%;box-sizing:border-box;box-shadow:none}
+.hub-audio-dock .music-volume-control input{flex:1;min-width:0;width:auto}
 @media(max-width:850px){
   .hub-main,.hub-utilities{grid-column:1}
   .hub-main{order:1}
   .hub-utilities{order:2;position:static}
-  .hub-bottom-actions{justify-content:stretch}
+  .hub-bottom-actions{display:grid;grid-template-columns:1fr;justify-content:stretch}
   .hub-bottom-actions button{width:100%}
+  .hub-audio-dock{width:100%}
 }
 
 
@@ -568,6 +576,7 @@ body.modal-open>.audio-controls{display:none!important}#modalBody{overflow-x:hid
 </section>
 <details class="incident-files"><summary>Open Incident Files</summary><div class="region-map" id="caseGrid"></div></details>
 <div class="hub-bottom-actions">
+  <div id="hubAudioDock" class="hub-audio-dock"></div>
   <button id="hubLaunchQuick" class="secondary">Return to Launch Screen</button>
 </div>
 </section>
@@ -1488,12 +1497,13 @@ function show(id){
  document.body.classList.toggle('launching',pregame);
  document.body.classList.toggle('case-immersive',id==='caseScreen');
  if(id!=='caseScreen')document.body.classList.remove('focus-game');
- const audioControls=$('.audio-controls'),caseAudioDock=$('#caseAudioDock'),adaptiveAudioDock=$('#adaptiveAudioDock'),masteryAudioDock=$('#masteryAudioDock');
+ const audioControls=$('.audio-controls'),hubAudioDock=$('#hubAudioDock'),caseAudioDock=$('#caseAudioDock'),adaptiveAudioDock=$('#adaptiveAudioDock'),masteryAudioDock=$('#masteryAudioDock');
  if(audioControls){
-   if(id==='caseScreen'&&caseAudioDock&&!caseAudioDock.contains(audioControls))caseAudioDock.appendChild(audioControls);
+   if(id==='hub'&&hubAudioDock&&!hubAudioDock.contains(audioControls))hubAudioDock.appendChild(audioControls);
+   else if(id==='caseScreen'&&caseAudioDock&&!caseAudioDock.contains(audioControls))caseAudioDock.appendChild(audioControls);
    else if(id==='adaptiveActivityScreen'&&adaptiveAudioDock&&!adaptiveAudioDock.contains(audioControls))adaptiveAudioDock.appendChild(audioControls);
    else if(id==='masteryScreen'&&masteryAudioDock&&!masteryAudioDock.contains(audioControls))masteryAudioDock.appendChild(audioControls);
-   else if(!['caseScreen','adaptiveActivityScreen','masteryScreen'].includes(id)&&audioControls.parentElement!==document.body)document.body.appendChild(audioControls);
+   else if(!['hub','caseScreen','adaptiveActivityScreen','masteryScreen'].includes(id)&&audioControls.parentElement!==document.body)document.body.appendChild(audioControls);
  }
  const topbar=$('.topbar');
  if(topbar)topbar.style.display=pregame?'none':'';
